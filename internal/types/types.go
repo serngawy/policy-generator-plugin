@@ -2,13 +2,19 @@
 package types
 
 type Manifest struct {
-	Patches []map[string]interface{} `json:"patches,omitempty" yaml:"patches,omitempty"`
-	Path    string                   `json:"path,omitempty" yaml:"path,omitempty"`
+	ComplianceType string                   `json:"complianceType,omitempty" yaml:"complianceType,omitempty"`
+	Patches        []map[string]interface{} `json:"patches,omitempty" yaml:"patches,omitempty"`
+	Path           string                   `json:"path,omitempty" yaml:"path,omitempty"`
 }
 
 type NamespaceSelector struct {
 	Exclude []string `json:"exclude,omitempty" yaml:"exclude,omitempty"`
 	Include []string `json:"include,omitempty" yaml:"include,omitempty"`
+}
+
+type ObjectTemplate struct {
+	ComplianceType   string                 `json:"complianceType,omitempty" yaml:"complianceType,omitempty"`
+	ObjectDefinition map[string]interface{} `json:"objectDefinition,omitempty" yaml:"objectDefinition,omitempty"`
 }
 
 type PlacementConfig struct {

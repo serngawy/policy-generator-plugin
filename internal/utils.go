@@ -17,10 +17,9 @@ import (
 
 // getManifests will get all of the manifest files associated with the input policy configuration.
 // An error is returned if a manifest path cannot be read.
-func getManifests(policyConf *types.PolicyConfig) ([]map[string]interface{}, error) {
-	manifests := []map[string]interface{}{}
+func getManifests(policyConf *types.PolicyConfig) ([]types.ObjectTemplate, error) {
+	manifests := []types.ObjectTemplate{}
 	for _, manifest := range policyConf.Manifests {
-		manifestPaths := []string{}
 		manifestFiles := []map[string]interface{}{}
 		readErr := fmt.Errorf("failed to read the manifest path %s", manifest.Path)
 		manifestPathInfo, err := os.Stat(manifest.Path)
@@ -45,7 +44,16 @@ func getManifests(policyConf *types.PolicyConfig) ([]map[string]interface{}, err
 				}
 
 				yamlPath := path.Join(manifest.Path, f.Name())
-				manifestPaths = append(manifestPaths, yamlPath)
+				manifestFile, err := unmarshalManifestFile(yamlPath)
+				if err != nil {
+					return nil, err
+				}
+
+				if len(*manifestFile) == 0 {
+					continue
+				}
+
+				manifestFiles = append(manifestFiles, *manifestFile...)
 			}
 		} else {
 			// Unmarshal the manifest in order to check for metadata patch replacement
@@ -78,19 +86,6 @@ func getManifests(policyConf *types.PolicyConfig) ([]map[string]interface{}, err
 			manifestFiles = append(manifestFiles, *manifestFile...)
 		}
 
-		for _, manifestPath := range manifestPaths {
-			manifestFile, err := unmarshalManifestFile(manifestPath)
-			if err != nil {
-				return nil, err
-			}
-
-			if len(*manifestFile) == 0 {
-				continue
-			}
-
-			manifestFiles = append(manifestFiles, *manifestFile...)
-		}
-
 		if len(manifest.Patches) > 0 {
 			patcher := manifestPatcher{manifests: manifestFiles, patches: manifest.Patches}
 			const errTemplate = `failed to process the manifest at "%s": %w`
@@ -107,7 +102,16 @@ func getManifests(policyConf *types.PolicyConfig) ([]map[string]interface{}, err
 			manifestFiles = *patchedFiles
 		}
 
-		manifests = append(manifests, manifestFiles...)
+		for _, manifestFile := range manifestFiles {
+			objTemp := types.ObjectTemplate{}
+			objTemp.ObjectDefinition = manifestFile
+			if manifest.ComplianceType != "" {
+				objTemp.ComplianceType = manifest.ComplianceType
+			} else {
+				objTemp.ComplianceType = policyConf.ComplianceType
+			}
+			manifests = append(manifests, objTemp)
+		}
 	}
 
 	return manifests, nil
@@ -139,11 +143,13 @@ func getPolicyTemplates(policyConf *types.PolicyConfig) ([]map[string]map[string
 	}
 	objectTemplates := make([]map[string]interface{}, 0, objectTemplatesLength)
 	policyTemplates := make([]map[string]map[string]interface{}, 0, policyTemplatesLength)
+	manifestExapnder := make([]map[string]interface{}, 0, policyTemplatesLength)
 	for _, manifest := range manifests {
 		objTemplate := map[string]interface{}{
-			"complianceType":   policyConf.ComplianceType,
-			"objectDefinition": manifest,
+			"complianceType":   manifest.ComplianceType,
+			"objectDefinition": manifest.ObjectDefinition,
 		}
+		manifestExapnder = append(manifestExapnder, manifest.ObjectDefinition)
 		if policyConf.ConsolidateManifests {
 			// put all objTemplate with manifest into single consolidated objectTemplates object
 			objectTemplates = append(objectTemplates, objTemplate)
@@ -164,7 +170,7 @@ func getPolicyTemplates(policyConf *types.PolicyConfig) ([]map[string]map[string
 	}
 
 	// check the enabled expanders and add additional policy templates
-	expandedPolicyTemplates := handleExpanders(manifests, policyConf)
+	expandedPolicyTemplates := handleExpanders(manifestExapnder, policyConf)
 	policyTemplates = append(policyTemplates, expandedPolicyTemplates...)
 
 	return policyTemplates, nil
