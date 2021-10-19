@@ -16,9 +16,11 @@ build_output
 
 # Dependency directories (remove the comment below to include it)
 vendor/
+out/
 
 .go/
 
 # IDE
 .vscode
 .idea
+.project

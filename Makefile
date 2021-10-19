@@ -20,9 +20,9 @@ KUSTOMIZE_PLUGIN_HOME ?= $(XDG_CONFIG_HOME)/kustomize/plugin
 API_PLUGIN_PATH ?= $(KUSTOMIZE_PLUGIN_HOME)/policy.open-cluster-management.io/v1/policygenerator
 
 # Kustomize arguments
-SOURCE_DIR ?= ran-examples/policies/
+SOURCE_DIR ?= ran-examples/policies
 
-.PHONY: build build-binary build-release generate layout fmt lint lint-dependencies test
+.PHONY: build build-binary build-release generate gen-files layout fmt lint lint-dependencies test
 
 include build/common/Makefile.common.mk
 
@@ -48,7 +48,11 @@ build-release:
 	GOOS=windows CGO_ENABLED=0 GOARCH=amd64 go build -o build_output/windows-amd64-PolicyGenerator.exe cmd/main.go
 
 generate:
-	@KUSTOMIZE_PLUGIN_HOME=$(KUSTOMIZE_PLUGIN_HOME) kustomize build --enable-alpha-plugins $(SOURCE_DIR)
+	@KUSTOMIZE_PLUGIN_HOME=$(KUSTOMIZE_PLUGIN_HOME) kustomize build $(SOURCE_DIR) --enable-alpha-plugins
+
+gen-files:
+	@mkdir -p $(SOURCE_DIR)/out/
+	@KUSTOMIZE_PLUGIN_HOME=$(KUSTOMIZE_PLUGIN_HOME) kustomize build $(SOURCE_DIR) --enable-alpha-plugins -o $(SOURCE_DIR)/out/
 
 layout:
 	mkdir -p $(API_PLUGIN_PATH)

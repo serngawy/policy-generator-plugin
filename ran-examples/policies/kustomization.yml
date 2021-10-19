@@ -1,4 +1,4 @@
 generators:
-#- ./common-policies.yaml
-#- ./group-du-sno-policies.yaml
+- ./common-policies.yaml
+- ./group-du-sno-policies.yaml
 - ./site1-du-sno-policies.yaml

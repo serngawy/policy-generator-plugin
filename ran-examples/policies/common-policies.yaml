@@ -26,6 +26,7 @@ policies:
 - name: logOperator-sub-policy
   manifests:
     - path: ../source-crs/ClusterLogNS.yaml
+      complianceType: "musthave"
     - path: ../source-crs/ClusterLogOperGroup.yaml
     - path: ../source-crs/ClusterLogSubscription.yaml
   complianceType: "mustonlyhave"
@@ -35,13 +36,17 @@ policies:
     - path: ../source-crs/SriovSubscriptionOperGroup.yaml
     - path: ../source-crs/SriovSubscription.yaml
 - name: ptp-sub-policy
+  complianceType: "mustonlyhave"
   manifests:
     - path: ../source-crs/PtpSubscriptionNS.yaml
+      complianceType: "musthave"
     - path: ../source-crs/PtpSubscriptionOperGroup.yaml
     - path: ../source-crs/PtpSubscription.yaml
 - name: paoOperator-sub-policy
+  complianceType: "mustonlyhave"
   manifests:
     - path: ../source-crs/PaoSubscriptionNS.yaml
+      complianceType: "musthave"
     - path: ../source-crs/PaoSubscriptionOperGroup.yaml
     - path: ../source-crs/PaoSubscriptionCatalogSource.yaml
       patches:
@@ -52,8 +57,10 @@ policies:
       -  spec:
           channel: "4.9"
 - name: storageOperator-sub-policy
+  complianceType: "mustonlyhave"
   manifests:
     - path: ../source-crs/StorageNS.yaml
+      complianceType: "musthave"
     - path: ../source-crs/StorageOperGroup.yaml
     - path: ../source-crs/StorageSubscription.yaml
       patches:
