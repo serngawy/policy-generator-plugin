@@ -1,0 +1,22 @@
+apiVersion: "logging.openshift.io/v1"
+kind: ClusterLogForwarder
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  outputs:
+  inputs:
+  - name: infra-logs
+    infrastructure:
+      namespaces:
+      - openshift-apiserver
+      - openshift-cluster-version
+      - openshift-etcd
+      - openshift-kube-scheduler
+      - openshift-monitoring
+      - openshift-performance-addon
+      - openshift-ptp
+      - openshift-machine-config-operator
+      - open-cluster-management-agent
+      - open-cluster-management-agent-addon
+  pipelines:

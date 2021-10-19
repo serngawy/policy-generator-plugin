@@ -1,0 +1,61 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: common-policies-generator
+placementBindingDefaults:
+  name: common-policies-placement-binding
+policyDefaults:
+  # categories: []
+  #controls:
+  #  - PR.DS-1 Data-at-rest
+  namespace: common-policies
+  # Use an existing placement rule so that placement bindings can be consolidated
+  placement:
+    clusterSelectors:
+      common: true
+  remediationAction: enforce
+  severity: medium
+  # standards: []
+  namespaceSelector:
+    exclude:
+      - kube-*
+    include:
+      - '*'
+policies:
+  # Create operators policies that will be installed in all clusters
+- name: logOperator-sub-policy
+  manifests:
+    - path: ../source-crs/ClusterLogNS.yaml
+    - path: ../source-crs/ClusterLogOperGroup.yaml
+    - path: ../source-crs/ClusterLogSubscription.yaml
+  complianceType: "mustonlyhave"
+- name: sriovOperator-sub-policy
+  manifests:
+    - path: ../source-crs/SriovSubscriptionNS.yaml
+    - path: ../source-crs/SriovSubscriptionOperGroup.yaml
+    - path: ../source-crs/SriovSubscription.yaml
+- name: ptp-sub-policy
+  manifests:
+    - path: ../source-crs/PtpSubscriptionNS.yaml
+    - path: ../source-crs/PtpSubscriptionOperGroup.yaml
+    - path: ../source-crs/PtpSubscription.yaml
+- name: paoOperator-sub-policy
+  manifests:
+    - path: ../source-crs/PaoSubscriptionNS.yaml
+    - path: ../source-crs/PaoSubscriptionOperGroup.yaml
+    - path: ../source-crs/PaoSubscriptionCatalogSource.yaml
+      patches:
+        -  spec:
+             image: quay.io/openshift-kni/performance-addon-operator-index:4.9-snapshot
+    - path: ../source-crs/PaoSubscription.yaml
+      patches:
+      -  spec:
+          channel: "4.9"
+- name: storageOperator-sub-policy
+  manifests:
+    - path: ../source-crs/StorageNS.yaml
+    - path: ../source-crs/StorageOperGroup.yaml
+    - path: ../source-crs/StorageSubscription.yaml
+      patches:
+      -  spec:
+           channel: "4.9"

@@ -20,7 +20,7 @@ KUSTOMIZE_PLUGIN_HOME ?= $(XDG_CONFIG_HOME)/kustomize/plugin
 API_PLUGIN_PATH ?= $(KUSTOMIZE_PLUGIN_HOME)/policy.open-cluster-management.io/v1/policygenerator
 
 # Kustomize arguments
-SOURCE_DIR ?= examples/
+SOURCE_DIR ?= ran-examples/policies/
 
 .PHONY: build build-binary build-release generate layout fmt lint lint-dependencies test
 

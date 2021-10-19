@@ -1,0 +1,25 @@
+apiVersion: performance.openshift.io/v1
+kind: PerformanceProfile
+metadata:
+  name: $name
+spec:
+  additionalKernelArgs:
+  - "idle=poll"
+  - "rcupdate.rcu_normal_after_boot=0"
+  cpu:
+    isolated: $isolated
+    reserved: $reserved
+  hugepages:
+    defaultHugepagesSize: $defaultHugepagesSize
+    pages:
+      - size: $size
+        count: $count
+        node: $node
+  machineConfigPoolSelector: {}
+  net:
+    userLevelNetworking: true
+  nodeSelector: {}
+  numa:
+    topologyPolicy: "restricted"
+  realTimeKernel:
+    enabled: true

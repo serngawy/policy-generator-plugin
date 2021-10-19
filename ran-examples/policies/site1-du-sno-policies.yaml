@@ -1,0 +1,110 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: PolicyGenerator
+metadata:
+  name: site1-du-sno-policies-generator
+placementBindingDefaults:
+  name: site1-du-sno-policies-placement-binding
+policyDefaults:
+  # categories: []
+  #controls:
+  #  - PR.DS-1 Data-at-rest
+  namespace: site1-du-sno-policies
+  # Use an existing placement rule so that placement bindings can be consolidated
+  placement:
+    clusterSelectors:
+      sites: "site1-du-sno"
+  remediationAction: enforce
+  severity: medium
+  # standards: []
+  namespaceSelector:
+    exclude:
+      - kube-*
+    include:
+      - '*'
+policies:
+- name: "sriov-nw-fh-policy"
+  manifests:
+    - path: ../source-crs/SriovNetwork.yaml
+      patches:
+        - metadata:
+            name: "sriov-nw-du-fh"
+          spec:
+            resourceName: du_fh
+            vlan: 140
+- name: "sriov-nnp-fh-policy"
+  manifests:
+    - path: ../source-crs/SriovNetworkNodePolicy.yaml
+      patches:
+        - metadata:
+            name: "sriov-nnp-du-fh"
+          spec:
+            deviceType: netdevice
+            isRdma: true
+            nicSelector:
+              pfNames: ["ens5f0"]
+            numVfs: 8
+            priority: 10
+            resourceName: du_fh
+            nodeSelector:
+              node-role.kubernetes.io/master: ""
+- name: "sriov-nw-mh-policy"
+  manifests:
+    - path: ../source-crs/SriovNetwork.yaml
+      patches:
+        - metadata:
+            name: "sriov-nw-du-mh"
+          spec:
+            resourceName: du_mh
+            vlan: 150
+- name: "sriov-nnp-mh-policy"
+  manifests:
+    - path: ../source-crs/SriovNetworkNodePolicy.yaml
+      patches:
+        - metadata:
+            name: "sriov-nnp-du-mh"
+          spec:
+            deviceType: netdevice
+            isRdma: true
+            nicSelector:
+              pfNames: ["ens7f0"]
+            numVfs: 8
+            priority: 10
+            resourceName: du_mh
+            nodeSelector:
+              node-role.kubernetes.io/master: ""
+- name: "perfprofile-policy"
+  manifests:
+    - path: ../source-crs/PerformanceProfile.yaml
+      patches:
+        - metadata:
+            name: openshift-node-performance-profile
+          spec:
+            machineConfigPoolSelector:
+              pools.operator.machineconfiguration.openshift.io/master: ""
+            nodeSelector:
+              node-role.kubernetes.io/master: ""
+            cpu:
+              isolated: "2-19,22-39"
+              reserved: "0-1,20-21"
+            hugepages:
+              defaultHugepagesSize: 1G
+              pages:
+                - size: 1G
+                  count: 32
+- name: "tuned-perf-patch-policy"
+  manifests:
+    - path: ../source-crs/TunedPerformancePatch.yaml
+      patches:
+        - spec:
+            profile:
+              - name: performance-patch
+                data: |
+                  [main]
+                  summary=Configuration changes profile inherited from performance created tuned
+                  include=openshift-node-performance-openshift-node-performance-profile
+                  [bootloader]
+                  cmdline_crash=nohz_full=2-19,22-39
+                  [sysctl]
+                  kernel.timer_migration=1
+                  [service]
+                  service.stalld=start,enable
