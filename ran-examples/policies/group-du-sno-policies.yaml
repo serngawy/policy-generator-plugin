@@ -25,10 +25,10 @@ policies:
   # Create group-du-sno policies
 - name: console-policy
   manifests:
-    - path: ../source-crs/ConsoleOperatorDisable.yaml
+    - path: source-crs/ConsoleOperatorDisable.yaml
 - name: log-forwarder-policy
   manifests:
-    - path: ../source-crs/ClusterLogForwarder.yaml
+    - path: source-crs/ClusterLogForwarder.yaml
       patches:
         - spec:
             outputs:
@@ -49,7 +49,7 @@ policies:
                 - kafka-open
 - name: "log-policy"
   manifests:
-    - path: ../source-crs/ClusterLogging.yaml
+    - path: source-crs/ClusterLogging.yaml
       patches:
         - spec:
             curation:
@@ -61,27 +61,27 @@ policies:
                 fluentd: {}
 - name: mc-sctp-policy
   manifests:
-    - path: ../source-crs/MachineConfigSctp.yaml
+    - path: source-crs/MachineConfigSctp.yaml
       patches:
         - metadata:
             labels:
               machineconfiguration.openshift.io/role: master
 - name: mc-chronyd-policy
   manifests:
-    - path: ../source-crs/MachineConfigDisableChronyd.yaml
+    - path: source-crs/MachineConfigDisableChronyd.yaml
       patches:
         - metadata:
             labels:
               machineconfiguration.openshift.io/role: master
 - name: sriov-operconfig-policy
   manifests:
-    - path: ../source-crs/SriovOperatorConfig.yaml
+    - path: source-crs/SriovOperatorConfig.yaml
       patches:
         - spec:
             disableDrain: true
 - name: mc-accelerated-policy
   manifests:
-    - path: ../source-crs/MachineConfigAcceleratedStartup.yaml
+    - path: source-crs/MachineConfigAcceleratedStartup.yaml
       patches:
         - metadata:
             name: 04-accelerated-container-startup-master
@@ -89,14 +89,14 @@ policies:
               machineconfiguration.openshift.io/role: master
 - name: disable-network-diag-policy
   manifests:
-    - path: ../source-crs/DisableSnoNetworkDiag.yaml
+    - path: source-crs/DisableSnoNetworkDiag.yaml
       patches:
         - metadata:
             labels:
               machineconfiguration.openshift.io/role: master
 - name: ptp-config-policy
   manifests:
-    - path: ../source-crs/PtpConfigSlave.yaml
+    - path: source-crs/PtpConfigSlave.yaml
       patches:
         - metadata:
             name: "du-ptp-slave"

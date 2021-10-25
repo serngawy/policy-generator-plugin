@@ -24,7 +24,7 @@ policyDefaults:
 policies:
 - name: "sriov-nw-fh-policy"
   manifests:
-    - path: ../source-crs/SriovNetwork.yaml
+    - path: source-crs/SriovNetwork.yaml
       patches:
         - metadata:
             name: "sriov-nw-du-fh"
@@ -33,7 +33,7 @@ policies:
             vlan: 140
 - name: "sriov-nnp-fh-policy"
   manifests:
-    - path: ../source-crs/SriovNetworkNodePolicy.yaml
+    - path: source-crs/SriovNetworkNodePolicy.yaml
       patches:
         - metadata:
             name: "sriov-nnp-du-fh"
@@ -49,7 +49,7 @@ policies:
               node-role.kubernetes.io/master: ""
 - name: "sriov-nw-mh-policy"
   manifests:
-    - path: ../source-crs/SriovNetwork.yaml
+    - path: source-crs/SriovNetwork.yaml
       patches:
         - metadata:
             name: "sriov-nw-du-mh"
@@ -58,7 +58,7 @@ policies:
             vlan: 150
 - name: "sriov-nnp-mh-policy"
   manifests:
-    - path: ../source-crs/SriovNetworkNodePolicy.yaml
+    - path: source-crs/SriovNetworkNodePolicy.yaml
       patches:
         - metadata:
             name: "sriov-nnp-du-mh"
@@ -74,7 +74,7 @@ policies:
               node-role.kubernetes.io/master: ""
 - name: "perfprofile-policy"
   manifests:
-    - path: ../source-crs/PerformanceProfile.yaml
+    - path: source-crs/PerformanceProfile.yaml
       patches:
         - metadata:
             name: openshift-node-performance-profile
@@ -93,7 +93,7 @@ policies:
                   count: 32
 - name: "tuned-perf-patch-policy"
   manifests:
-    - path: ../source-crs/TunedPerformancePatch.yaml
+    - path: source-crs/TunedPerformancePatch.yaml
       patches:
         - spec:
             profile:
